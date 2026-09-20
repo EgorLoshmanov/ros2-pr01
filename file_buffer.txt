@@ -1,0 +1,17 @@
+mkdir -p evidence/pr01
+ros2 doctor --report > evidence/pr01/doctor.txt 2>&1
+ros2 node list --no-daemon --spin-time 2 > evidence/pr01/nodes-before.txt
+ros2 topic list -t > evidence/pr01/topics.txt
+ros2 node info /turtlesim > evidence/pr01/turtlesim-info.txt
+ros2 node info /teleop_turtle > evidence/pr01/teleop-info.txt
+ros2 topic type /turtle1/pose > evidence/pr01/pose-type.txt
+POSE_TYPE=$(cat evidence/pr01/pose-type.txt)
+ros2 topic echo /turtle1/pose --once > evidence/pr01/pose-before.txt
+
+
+
+
+TIMEFORMAT='elapsed_seconds=%R'
+{ time timeout --signal=INT 15s ros2 topic hz /turtle1/pose \
+  > evidence/pr01/pose-hz.txt 2>&1; } 2> evidence/pr01/pose-hz-duration.txt
+printf 'exit=%s\n' "$?" > evidence/pr01/pose-hz-exit.txt

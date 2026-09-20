@@ -1,0 +1,34 @@
+PR01 local verification
+recorded_at_utc=2026-09-20T17:17:08Z
+
+Environment:
+- Ubuntu 26.04.1 LTS
+- architecture: aarch64
+- ROS_DISTRO=lyrical
+- RMW_IMPLEMENTATION=rmw_fastrtps_cpp
+- working ROS_DOMAIN_ID=16
+- broken ROS_DOMAIN_ID=17
+
+Checks:
+PASS working graph contains /teleop_turtle and /turtlesim
+PASS /turtle1/pose type is turtlesim_msgs/msg/Pose
+PASS /turtle1/pose rate measured at approximately 62.49 Hz for ~15 s
+PASS keyboard control changes pose in domain 16
+PASS domain 17 sees /teleop_turtle but not /turtlesim
+PASS pose read from domain 17 times out with exit=124
+PASS keyboard control from domain 17 does not change turtlesim pose in domain 16
+PASS returning teleop to domain 16 restores both nodes
+PASS pose read after recovery succeeds with exit=0
+PASS keyboard control after recovery changes pose
+PASS doctor.txt created
+PASS turtlesim.log created
+PASS turtlesim-before.png created
+PASS turtlesim-broken.png created
+PASS turtlesim-fixed.png created
+
+Official course-kit checker:
+NOT RUN
+Reason: this working directory is not a Git repository and no .course-kit/course-kit metadata is present.
+
+Result:
+LOCAL CHECKS PASSED

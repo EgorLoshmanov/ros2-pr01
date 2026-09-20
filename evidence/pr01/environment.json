@@ -1,0 +1,20 @@
+{
+  "run_mode": "docker",
+  "os": "Ubuntu 26.04.1 LTS",
+  "architecture": "aarch64",
+  "ros_distro": "lyrical",
+  "gazebo": {
+    "distribution": "Jetty",
+    "version": "10.5.0"
+  },
+  "rmw_implementation": "rmw_fastrtps_cpp",
+  "ros_domain_id": 16,
+  "experiment_domains": {
+    "working": 16,
+    "broken": 17
+  },
+  "docker_image_digest": "tiryoh/ros2-desktop-vnc@sha256:23bbfbd0bac264da8ef39fb599b9d58b209b06603b49e979eba8021286c56b6e",
+  "network": "bridge; все ноды и CLI внутри одного контейнера",
+  "gui": "noVNC/HTML5, браузер на macOS",
+  "recorded_at_utc": "2026-09-20T16:29:24Z"
+}
