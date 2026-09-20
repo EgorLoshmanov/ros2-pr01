@@ -1,180 +1,85 @@
 {
-  "schema_version": "1.0",
-  "practice_id": "pr01",
-  "title": "ROS 2 graph, ROS_DOMAIN_ID isolation and recovery",
-  "recorded_at_utc": "2026-09-20T17:17:08Z",
-  "course_kit": null,
-  "commit": null,
-  "environment": {
-    "run_mode": "docker",
-    "os": "Ubuntu 26.04.1 LTS",
-    "architecture": "aarch64",
-    "ros_distro": "lyrical",
-    "rmw_implementation": "rmw_fastrtps_cpp",
-    "ros_domain_id": 16,
-    "experiment_domains": {
-      "working": 16,
-      "broken": 17
-    },
-    "gazebo_sim_version": "10.5.0",
-    "docker_image_digest": "tiryoh/ros2-desktop-vnc@sha256:23bbfbd0bac264da8ef39fb599b9d58b209b06603b49e979eba8021286c56b6e",
-    "gui": "noVNC/HTML5 in browser on macOS",
-    "network": "Docker bridge; all ROS nodes and CLI commands executed inside one container"
+  "schema_version": 1,
+  "practice_id": "PR01",
+  "commit": "c0c541ecab79f4b2398c53a769daf019cdafc197",
+  "course_kit": {
+    "version": "v1-w01",
+    "archive_sha256": "57866a9c98fa3abdec27b35a180697ee680bfb0f05cc015970ce306d6d849fea"
   },
-  "commands": {
-    "working_graph": [
-      "ros2 node list --no-daemon --spin-time 2",
-      "ros2 topic list -t",
-      "ros2 node info /turtlesim",
-      "ros2 node info /teleop_turtle",
-      "ros2 topic type /turtle1/pose",
-      "ros2 topic echo /turtle1/pose --once",
-      "timeout --signal=INT 15s ros2 topic hz /turtle1/pose"
-    ],
-    "broken_graph": [
-      "export ROS_DOMAIN_ID=17",
-      "ros2 run turtlesim turtle_teleop_key",
-      "ROS_DOMAIN_ID=17 ros2 node list --no-daemon --spin-time 2",
-      "ROS_DOMAIN_ID=17 timeout --signal=INT --kill-after=2s 5s ros2 topic echo /turtle1/pose turtlesim_msgs/msg/Pose --once"
-    ],
-    "recovery": [
-      "export ROS_DOMAIN_ID=16",
-      "ros2 run turtlesim turtle_teleop_key",
-      "ROS_DOMAIN_ID=16 ros2 node list --no-daemon --spin-time 2",
-      "ROS_DOMAIN_ID=16 timeout --signal=INT --kill-after=2s 5s ros2 topic echo /turtle1/pose turtlesim_msgs/msg/Pose --once"
-    ]
-  },
+  "commands": [
+    "ros2 run turtlesim turtlesim_node",
+    "ros2 run turtlesim turtle_teleop_key",
+    "ros2 doctor --report",
+    "ros2 node list --no-daemon --spin-time 2",
+    "ros2 topic list -t",
+    "ros2 node info /turtlesim",
+    "ros2 node info /teleop_turtle",
+    "ros2 topic type /turtle1/pose",
+    "ros2 topic echo /turtle1/pose --once",
+    "timeout --signal=INT 15s ros2 topic hz /turtle1/pose",
+    "ROS_DOMAIN_ID=17 timeout --signal=INT --kill-after=2s 5s ros2 topic echo /turtle1/pose turtlesim_msgs/msg/Pose --once",
+    "ROS_DOMAIN_ID=16 timeout --signal=INT --kill-after=2s 5s ros2 topic echo /turtle1/pose turtlesim_msgs/msg/Pose --once",
+    "ROS_DOMAIN_ID=16 ros2 topic echo /turtle1/pose --once",
+    "python3 -m json.tool evidence/pr01/environment.json",
+    "python3 .course-kit/v1/tools/check_practice.py PR01 --submission ."
+  ],
   "tests": [
     {
-      "name": "working_nodes_visible",
-      "passed": true,
-      "observed": [
-        "/teleop_turtle",
-        "/turtlesim"
-      ]
+      "name": "В рабочем домене обнаружены /teleop_turtle и /turtlesim",
+      "status": "passed",
+      "evidence": "nodes-before.txt"
     },
     {
-      "name": "pose_topic_type",
-      "passed": true,
-      "observed": "turtlesim_msgs/msg/Pose"
+      "name": "Тип позы определён; получено сообщение Pose",
+      "status": "passed",
+      "evidence": "pose-type.txt, pose-before.txt"
     },
     {
-      "name": "pose_rate",
-      "passed": true,
-      "observed_hz": 62.488,
-      "duration_seconds": 15.349,
-      "timeout_exit_code": 124
+      "name": "Частота позы измерена более 10 секунд: около 62.49 Гц",
+      "status": "passed",
+      "evidence": "pose-hz.txt, pose-hz-duration.txt"
     },
     {
-      "name": "working_control_changes_pose",
-      "passed": true,
-      "before": {
-        "x": 5.517826557159424,
-        "y": 7.560268878936768,
-        "theta": 1.5839999914169312
-      },
-      "after": {
-        "x": 5.491209030151367,
-        "y": 9.576092720031738,
-        "theta": 1.5839999914169312
-      }
+      "name": "Клавиша управления в домене 16 изменила положение черепахи",
+      "status": "passed",
+      "evidence": "pose-before.txt, pose-after-key-working.txt"
     },
     {
-      "name": "broken_domain_isolates_graph",
-      "passed": true,
-      "observed_nodes_domain_17": [
-        "/teleop_turtle"
-      ],
-      "pose_echo_exit_code": 124
+      "name": "В домене 17 виден только teleop; чтение позы завершилось таймаутом 124",
+      "status": "passed",
+      "evidence": "nodes-broken.txt, pose-broken.txt, pose-broken-exit.txt"
     },
     {
-      "name": "broken_control_does_not_change_pose",
-      "passed": true,
-      "before": {
-        "x": 5.464591026306152,
-        "y": 11.088889122009277,
-        "theta": 1.5839999914169312
-      },
-      "after": {
-        "x": 5.464591026306152,
-        "y": 11.088889122009277,
-        "theta": 1.5839999914169312
-      }
+      "name": "Клавиша управления из домена 17 не изменила позу симулятора",
+      "status": "passed",
+      "evidence": "pose-after-key-broken-control.txt"
     },
     {
-      "name": "recovery_restores_graph",
-      "passed": true,
-      "observed": [
-        "/teleop_turtle",
-        "/turtlesim"
-      ],
-      "pose_echo_exit_code": 0
+      "name": "Возврат в домен 16 восстановил получение позы: exit=0",
+      "status": "passed",
+      "evidence": "nodes-fixed.txt, pose-fixed.txt, pose-fixed-exit.txt"
     },
     {
-      "name": "recovery_restores_control",
-      "passed": true,
-      "before": {
-        "x": 5.491209030151367,
-        "y": 9.576092720031738,
-        "theta": 1.5839999914169312
-      },
-      "after": {
-        "x": 5.464591026306152,
-        "y": 11.088889122009277,
-        "theta": 1.5839999914169312
-      }
+      "name": "После восстановления управление снова изменило положение черепахи",
+      "status": "passed",
+      "evidence": "pose-after-key-fixed.txt"
     }
   ],
   "defect": {
-    "introduced_by": "ROS_DOMAIN_ID mismatch",
-    "turtlesim_domain": 16,
-    "teleop_domain": 17,
-    "symptoms": [
-      "/turtlesim is not visible from domain 17",
-      "/turtle1/pose is not received from domain 17",
-      "teleop commands from domain 17 do not move turtlesim in domain 16"
-    ],
-    "root_cause": "ROS 2 participants in different DDS domains do not discover or exchange data with each other in this experiment",
-    "fix": "Restart /teleop_turtle with ROS_DOMAIN_ID=16"
+    "reproducer": "Симулятор оставлен в ROS_DOMAIN_ID=16; teleop остановлен и запущен заново в домене 17. CLI-подписчик позы запущен в 17 с явным типом turtlesim_msgs/msg/Pose и таймаутом 5 секунд. Поза не получена, exit=124; управление не изменяет координаты.",
+    "root_cause": "Участники из разных ROS_DOMAIN_ID не обнаруживают друг друга в этой конфигурации. Переменная окружения применяется при запуске процесса: export не перенастраивает уже работающую ноду.",
+    "proof_after": "Teleop перезапущен в домене 16, CLI возвращён в 16. Тот же ros2 topic echo получил Pose и завершился с exit=0. После восстановления управляющая клавиша снова изменила координаты. Первичные данные находятся в graph.md и evidence-файлах."
   },
-  "claims": [
-    "The working ROS 2 graph contains /teleop_turtle and /turtlesim.",
-    "/teleop_turtle publishes geometry_msgs/msg/Twist to /turtle1/cmd_vel and /turtlesim subscribes to it.",
-    "/turtlesim publishes turtlesim_msgs/msg/Pose on /turtle1/pose at approximately 62.49 Hz.",
-    "Moving /teleop_turtle to ROS_DOMAIN_ID=17 isolates it from /turtlesim in ROS_DOMAIN_ID=16.",
-    "Returning /teleop_turtle to ROS_DOMAIN_ID=16 restores discovery, pose delivery and keyboard control."
-  ],
-  "evidence": [
-    "doctor.txt",
-    "environment-sources.txt",
-    "environment.json",
-    "graph.md",
-    "nodes-before.txt",
-    "nodes-broken.txt",
-    "nodes-fixed.txt",
-    "pose-before.txt",
-    "pose-type.txt",
-    "pose-hz.txt",
-    "pose-hz-duration.txt",
-    "pose-hz-exit.txt",
-    "pose-after-key-working.txt",
-    "pose-broken.txt",
-    "pose-broken-exit.txt",
-    "pose-after-key-broken-control.txt",
-    "pose-fixed.txt",
-    "pose-fixed-exit.txt",
-    "pose-after-key-fixed.txt",
-    "teleop-info.txt",
-    "topics.txt",
-    "turtlesim-info.txt",
-    "turtlesim.log",
-    "turtlesim-before.png",
-    "turtlesim-broken.png",
-    "turtlesim-fixed.png",
-    "ci-local.txt"
-  ],
-  "notes": [
-    "The working directory is not a Git repository, so commit is null.",
-    "No course-kit metadata directory was present, so course_kit is null."
-  ]
+  "claims": {
+    "public_tests_passed": true,
+    "defect_reproduced": true,
+    "defect_fixed": true
+  },
+  "time": {
+    "contact_academic_hours": 0,
+    "self_study_hours": 0
+  },
+  "time_note": "Время выполнения отдельно не замерялось; значения времени не используются как измерение нормативной трудоёмкости.",
+  "ai_used": true,
+  "recorded_at_utc": "2026-09-20T17:17:08+00:00"
 }
