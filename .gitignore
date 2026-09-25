@@ -2,3 +2,10 @@
 course-kit.tar.gz
 .DS_Store
 ros2-pr01/
+.course-kit/
+course-kit.tar.gz
+build/
+install/
+log/
+__pycache__/
+*.pyc
