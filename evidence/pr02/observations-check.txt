@@ -1,0 +1,1 @@
+Pose, endpoints and shutdown: passed

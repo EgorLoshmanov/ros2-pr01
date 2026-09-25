@@ -1,0 +1,8 @@
+[INFO] [launch]: All log files can be found below /home/ubuntu/.ros/log/2026-09-25-02-42-19-213696-37e357f9e585-10538
+[INFO] [launch]: Default logging verbosity is set to INFO
+[INFO] [turtlesim_node-1]: process started with pid [10556]
+[turtlesim_node-1] [INFO] [1790304139.269151012] [turtlesim]: Starting turtlesim with node name /turtlesim
+[turtlesim_node-1] [INFO] [1790304139.271096304] [turtlesim]: Spawning turtle [turtle1] at x=[5.544445], y=[5.544445], theta=[0.000000]
+[WARNING] [launch]: user interrupted with ctrl-c (SIGINT)
+[turtlesim_node-1] [INFO] [1790304267.681303710] [rclcpp]: signal_handler(signum=2)
+[INFO] [turtlesim_node-1]: process has finished cleanly [pid 10556]

@@ -1,0 +1,54 @@
+{
+  "schema_version": 1,
+  "practice_id": "PR02",
+  "commit": "c57dec059af37b73d27d5f90dfcc46c140b7dd84",
+  "course_kit": {
+    "version": "v1-w02",
+    "archive_sha256": "5d210c431e32418f45e2cffa9dd2028116c7a9520a36f3c7079c778cd73437a8"
+  },
+  "commands": [
+    "ros2 pkg create --build-type ament_python --license Apache-2.0 turtle_bringup --dependencies launch launch_ros turtlesim",
+    "colcon build --symlink-install --packages-select turtle_bringup",
+    "ros2 pkg prefix turtle_bringup",
+    "ros2 launch turtle_bringup sim.launch.py",
+    "ros2 node list --no-daemon --spin-time 2",
+    "ros2 topic type /turtle1/pose",
+    "ros2 interface show geometry_msgs/msg/Twist",
+    "ros2 topic echo /turtle1/pose --once",
+    "ros2 topic pub --once /turtle1/cmd_vel geometry_msgs/msg/Twist '{linear: {x: 1.0}, angular: {z: 0.5}}'",
+    "ros2 topic pub --rate 1 --wait-matching-subscriptions 0 /cmd_vel geometry_msgs/msg/Twist '{linear: {x: 1.0}, angular: {z: 0.5}}'",
+    "ros2 topic info /cmd_vel --verbose",
+    "ros2 topic info /turtle1/cmd_vel --verbose",
+    "ros2 topic pub --rate 1 --wait-matching-subscriptions 0 /turtle1/cmd_vel geometry_msgs/msg/Twist '{linear: {x: 1.0}, angular: {z: 0.5}}'",
+    "python3 -m pytest test -q"
+  ],
+  "tests": [
+    {"name": "Пустой пакет собран до добавления launch", "status": "passed", "evidence": "build-empty.txt"},
+    {"name": "Пакет с установленным launch собран и обнаружен", "status": "passed", "evidence": "build.txt, package-prefix.txt"},
+    {"name": "Синтаксис launch и тесты каркаса", "status": "passed", "evidence": "package-tests.txt"},
+    {"name": "Launch создаёт и останавливает /turtlesim", "status": "passed", "evidence": "nodes-running.txt, nodes-stopped.txt, launch-first.txt"},
+    {"name": "Одна правильная команда меняет позу", "status": "passed", "evidence": "pose-before.txt, pose-working.txt"},
+    {"name": "Ошибочный /cmd_vel не двигает черепаху", "status": "passed", "evidence": "topic-broken.txt, topic-target-before-fix.txt, pose-broken.txt"},
+    {"name": "Исправленное имя соединяет издателя и меняет позу", "status": "passed", "evidence": "topic-fixed.txt, pose-fixed.txt, pose-resting.txt"},
+    {"name": "Числовые выводы и остановка ноды сверены с исходными файлами", "status": "passed", "evidence": "observations-check.txt"},
+    {"name": "Контракт комплекта курса v1-w02", "status": "passed", "evidence": "course-check.txt"}
+  ],
+  "defect": {
+    "reproducer": "Публикация Twist в /cmd_vel при запущенном turtlesim: 1 издатель и 0 подписчиков; x=6.509308815002441, y=5.796990871429443 не изменились.",
+    "root_cause": "turtlesim подписан на /turtle1/cmd_vel, а /cmd_vel — другое полное имя топика.",
+    "proof_after": "При той же команде с именем /turtle1/cmd_vel обнаружены 1 издатель и 1 подписчик; x=3.5634021759033203, y=7.871734142303467 во время движения. После остановки публикации скорости снова нулевые."
+  },
+  "claims": {
+    "public_tests_passed": true,
+    "defect_reproduced": true,
+    "defect_fixed": true
+  },
+  "time": {
+    "contact_academic_hours": 0,
+    "self_study_hours": 0.5
+  },
+  "time_note": "Контактного занятия в этой среде не было; самостоятельная работа оценена примерно в 30 минут.",
+  "ai_used": true,
+  "recorded_at_utc": "2026-09-25T02:46:26Z",
+  "runtime_note": "Настоящий turtlesim с QT_QPA_PLATFORM=offscreen; визуальной проверки окна нет, движение подтверждено Pose и состоянием графа ROS 2."
+}
