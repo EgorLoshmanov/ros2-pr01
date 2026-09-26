@@ -2,7 +2,9 @@ name: PR03 — patrol and evidence
 
 on:
   push:
+    branches: [pr03]
   pull_request:
+    branches: [pr03]
 
 permissions:
   contents: read

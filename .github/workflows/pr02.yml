@@ -2,7 +2,9 @@ name: PR02 — сборка пакета и проверка отчёта
 
 on:
   push:
+    branches: [pr02]
   pull_request:
+    branches: [pr02]
 
 permissions:
   contents: read
