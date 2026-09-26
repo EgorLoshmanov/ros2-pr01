@@ -1,0 +1,52 @@
+name: PR03 — patrol and evidence
+
+on:
+  push:
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  practice:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+
+    container:
+      image: osrf/ros:lyrical-desktop-full@sha256:e6b1cb530b65588279681db53784e264ce5cf83f2cc33e689d27d6024d7f3ebe
+      options: --user 0
+
+    env:
+      COURSE_KIT_URL: https://ros.lms.ci.nsu.ru/downloads/robotics-course-kit-v1-w03-7fbfd3e8161a.tar.gz
+      COURSE_KIT_SHA256: 7fbfd3e8161ab6c6ebefc7663efdaf77d9a7d490399743507f33dcefbd5ac522
+
+    steps:
+      - name: Get repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Build and test ROS packages
+        shell: bash
+        run: |
+          source /opt/ros/lyrical/setup.bash
+          colcon build --symlink-install --packages-select turtle_bringup patrol
+          source install/setup.bash
+          ros2 pkg executables patrol
+          python3 -m pytest src/patrol/test -q
+          colcon test --packages-select patrol turtle_bringup --event-handlers console_direct+
+          colcon test-result --verbose
+
+      - name: Get pinned course kit
+        shell: bash
+        run: |
+          curl -fsSLo course-kit.tar.gz "$COURSE_KIT_URL"
+          printf '%s  %s\n' "$COURSE_KIT_SHA256" course-kit.tar.gz | sha256sum -c -
+          mkdir -p .course-kit
+          tar -xzf course-kit.tar.gz -C .course-kit
+          test "$(cat .course-kit/v1/VERSION)" = v1-w03
+
+      - name: Check PR03 evidence
+        shell: bash
+        run: |
+          python3 .course-kit/v1/tools/check_practice.py PR03 --submission .
