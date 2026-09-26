@@ -1,0 +1,33 @@
+ПР03, ROS 2 Lyrical, 26 сентября 2026, ROS_DOMAIN_ID=87
+
+colcon build --symlink-install --packages-select turtle_bringup patrol
+  Finished <<< patrol
+  Finished <<< turtle_bringup
+  Summary: 2 packages finished
+
+ros2 pkg executables patrol
+  patrol patrol
+
+python3 -m pytest src/patrol/test -q
+  6 passed, 1 skipped in 3.65s
+  Чистая функция проверена для отсутствующей позы и полученной Pose.
+  Пропущен сгенерированный тест copyright, как в каркасе пакета.
+
+colcon test --packages-select patrol turtle_bringup --event-handlers console_direct+
+  patrol: 6 passed, 1 skipped
+  turtle_bringup: 4 passed, 1 skipped
+  Summary: 2 packages finished
+
+colcon test-result --verbose
+  Summary: 12 tests, 0 errors, 0 failures, 2 skipped
+
+Опыт с настоящим turtlesim:
+  /cmd_vel: 1 publisher, 0 subscriptions — pose не изменилась.
+  /turtle1/cmd_vel после remap: 1 publisher, 1 subscription — pose изменилась.
+  ros2 topic hz /turtle1/cmd_vel --window 100: 9.999 Hz (окно 100 сообщений).
+  Исходные выводы: topic-broken.txt, topic-target-before-fix.txt,
+  topic-fixed.txt, pose-before.txt, pose-broken.txt, pose-fixed.txt,
+  command-hz.txt.
+
+python3 .course-kit/v1/tools/check_practice.py PR03 --submission .
+  PR03: контракт evidence выполнен

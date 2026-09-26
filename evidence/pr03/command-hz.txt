@@ -1,0 +1,23 @@
+Elapsed wall time: 12.98 s; timeout exit: 124
+average rate: 9.994
+	min: 0.097s max: 0.104s std dev: 0.00202s window: 9
+average rate: 10.002
+	min: 0.097s max: 0.104s std dev: 0.00201s window: 19
+average rate: 10.000
+	min: 0.097s max: 0.104s std dev: 0.00166s window: 29
+average rate: 10.001
+	min: 0.095s max: 0.104s std dev: 0.00179s window: 39
+average rate: 9.998
+	min: 0.095s max: 0.104s std dev: 0.00167s window: 49
+average rate: 10.001
+	min: 0.095s max: 0.104s std dev: 0.00164s window: 59
+average rate: 10.001
+	min: 0.095s max: 0.104s std dev: 0.00163s window: 69
+average rate: 10.000
+	min: 0.095s max: 0.104s std dev: 0.00160s window: 79
+average rate: 10.000
+	min: 0.095s max: 0.104s std dev: 0.00153s window: 89
+average rate: 10.001
+	min: 0.095s max: 0.104s std dev: 0.00149s window: 99
+average rate: 9.999
+	min: 0.095s max: 0.104s std dev: 0.00142s window: 100
