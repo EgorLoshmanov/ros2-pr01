@@ -1,0 +1,31 @@
+ПР04, ROS 2 Lyrical, 28 сентября 2026 года
+
+Комплект курса: v1-w04, SHA-256 архива:
+fec6b4e886c19146078bf69fbf90a19279a4cd33f656642395350b299efeb226
+
+$ colcon build --symlink-install --packages-select turtle_bringup patrol
+Summary: 2 packages finished
+
+$ python3 -m pytest src/patrol/test -q
+21 passed, 1 skipped in 3.90s
+
+$ colcon test --packages-select patrol turtle_bringup
+Summary: 2 packages finished
+
+$ colcon test-result --verbose
+Summary: 27 tests, 0 errors, 0 failures, 2 skipped
+
+Дефектная ветка pr04-defect, коммит 9f96f05b5b770a8b7987b5c4e4b44041a2975928:
+$ python3 -m pytest src/patrol/test/test_command.py src/patrol/test/test_parameters.py -k "invalid_frequency or frequency_update" -q
+4 failed, 13 deselected in 0.28s
+test_invalid_frequency[0.0]: Failed: DID NOT RAISE ValueError
+test_invalid_frequency[-1.0]: Failed: DID NOT RAISE ValueError
+test_invalid_frequency[nan]: Failed: DID NOT RAISE ValueError
+test_frequency_update_keeps_one_timer_and_rejects_bad_values:
+  ZeroDivisionError: division by zero at create_timer(1.0 / publish_hz)
+
+Исправленная ветка pr04, коммит bf21240f1d1fd158a61437f3a625127dd5b9b04f:
+$ python3 -m pytest src/patrol/test/test_command.py src/patrol/test/test_parameters.py -k "invalid_frequency or frequency_update" -q
+4 passed, 13 deselected in 0.23s
+
+Фактические частоты и ответы ros2 param находятся в parameters.md.

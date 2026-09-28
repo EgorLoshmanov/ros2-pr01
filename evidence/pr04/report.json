@@ -1,0 +1,72 @@
+{
+  "schema_version": 1,
+  "practice_id": "PR04",
+  "commit": "bf21240f1d1fd158a61437f3a625127dd5b9b04f",
+  "course_kit": {
+    "version": "v1-w04",
+    "archive_sha256": "fec6b4e886c19146078bf69fbf90a19279a4cd33f656642395350b299efeb226"
+  },
+  "commands": [
+    "colcon build --symlink-install --packages-select turtle_bringup patrol",
+    "python3 -m pytest src/patrol/test -q",
+    "colcon test --packages-select patrol turtle_bringup",
+    "colcon test-result --verbose",
+    "ros2 launch turtle_bringup sim.launch.py",
+    "ros2 run patrol patrol --ros-args -r cmd_vel:=/turtle1/cmd_vel",
+    "ros2 topic type /turtle1/pose",
+    "ros2 param get /patrol publish_hz",
+    "ros2 param set /patrol publish_hz 5.0",
+    "ros2 param set /patrol publish_hz 0.0",
+    "ros2 topic hz /turtle1/cmd_vel --window 20",
+    "ros2 param set /patrol linear_speed 0.8",
+    "ros2 param set /patrol turn_rate -0.4",
+    "ros2 topic echo /turtle1/cmd_vel --once",
+    "ros2 service call /clear std_srvs/srv/Empty '{}'",
+    "ros2 action list -t"
+  ],
+  "tests": [
+    {
+      "name": "Сборка и тесты ROS 2: 27 тестов, без ошибок и отказов",
+      "status": "passed",
+      "evidence": "tests.txt"
+    },
+    {
+      "name": "Чистая функция проверяет 10→5 Гц, ноль, отрицательную частоту и NaN",
+      "status": "passed",
+      "evidence": "tests.txt"
+    },
+    {
+      "name": "Нода сохраняет параметр и единственный таймер после отказа",
+      "status": "passed",
+      "evidence": "tests.txt"
+    },
+    {
+      "name": "Поток команд меняется с 10 на 5 Гц; отказ на нуле сохраняет 5 Гц",
+      "status": "passed",
+      "evidence": "parameters.md"
+    },
+    {
+      "name": "Готовый сервис /clear вызван, action поворота найден",
+      "status": "passed",
+      "evidence": "parameters.md"
+    }
+  ],
+  "defect": {
+    "reproducer": "В ветке pr04-defect (9f96f05b5b770a8b7987b5c4e4b44041a2975928) отключена проверка publish_hz; тот же pytest передал 0.0 и получил ZeroDivisionError на create_timer(1.0 / publish_hz): 4 failed.",
+    "root_cause": "Недопустимый ноль доходил до вычисления периода таймера, потому что проверка частоты была отключена.",
+    "proof_after": "В pr04 тот же тест: 4 passed; ros2 param set /patrol publish_hz 0.0 отклонён, параметр остаётся 5.0 и поток измерен как 5.000 Гц."
+  },
+  "claims": {
+    "public_tests_passed": true,
+    "defect_reproduced": true,
+    "defect_fixed": true
+  },
+  "time": {
+    "contact_academic_hours": 0,
+    "self_study_hours": 1
+  },
+  "time_note": "Выполнено самостоятельно в этой среде; контактного занятия не было.",
+  "ai_used": true,
+  "recorded_at_utc": "2026-09-28T13:03:36Z",
+  "runtime_note": "turtlesim запущен с QT_QPA_PLATFORM=offscreen; проверены сообщения, частота и ответы ROS, без визуальной проверки окна."
+}
