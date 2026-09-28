@@ -1,4 +1,51 @@
-# ПР03. Первая нода: поза и команда
+# ПР04. Параметризуем движение
+
+Ветка `pr04` продолжает ПР03. Нода `patrol` использует параметры
+`linear_speed` (0–1 м/с, по умолчанию 0.5), `turn_rate` (−1–1 рад/с,
+по умолчанию 0.3) и `publish_hz` (1–30 Гц, по умолчанию 10.0).
+Все значения должны быть конечными. Недопустимое обновление отклоняется до
+изменения команды или таймера. При смене частоты старый таймер удаляется.
+
+Из корня репозитория:
+
+```bash
+source /opt/ros/lyrical/setup.bash
+export ROS_DOMAIN_ID=87
+colcon build --symlink-install --packages-select turtle_bringup patrol
+source install/setup.bash
+ros2 launch turtle_bringup sim.launch.py
+```
+
+В другом терминале с теми же `source` и `ROS_DOMAIN_ID`:
+
+```bash
+ros2 run patrol patrol --ros-args -r cmd_vel:=/turtle1/cmd_vel
+```
+
+В третьем терминале меняйте параметры и измеряйте поток команд:
+
+```bash
+ros2 param set /patrol publish_hz 5.0
+ros2 param set /patrol publish_hz 0.0
+ros2 param get /patrol publish_hz
+ros2 topic hz /turtle1/cmd_vel
+```
+
+Ноль отклоняется, частота остаётся 5 Гц. Команды и фактические результаты
+записаны в [evidence/pr04/parameters.md](evidence/pr04/parameters.md),
+проверки — в [evidence/pr04/tests.txt](evidence/pr04/tests.txt).
+
+```bash
+python3 -m pytest src/patrol/test -q
+colcon test --packages-select patrol turtle_bringup
+colcon test-result --verbose
+python3 .course-kit/v1/tools/check_practice.py PR04 --submission .
+```
+
+Для checker нужен комплект курса `v1-w04`, SHA-256 архива
+`fec6b4e886c19146078bf69fbf90a19279a4cd33f656642395350b299efeb226`.
+
+## ПР03. Первая нода: поза и команда
 
 Ветка `pr03` продолжает ПР02. Пакет `turtle_bringup` запускает готовый
 симулятор, а новый пакет `patrol` содержит собственную ноду: она подписывается
