@@ -49,7 +49,7 @@ class Patrol(Node):
         self.publish_hz = self.declare_parameter('publish_hz', 10.0).value
         validate_settings(self.linear_speed, self.turn_rate, self.publish_hz)
         self.pose_subscription = self.create_subscription(
-            Pose, '/turtle1/pose', self.remember_pose, 10)
+            Pose, 'pose', self.remember_pose, 10)
         self.command_publisher = self.create_publisher(Twist, 'cmd_vel', 10)
         self.command_timer = self.create_timer(
             1.0 / self.publish_hz, self.publish_command)

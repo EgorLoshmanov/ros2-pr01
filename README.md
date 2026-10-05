@@ -1,3 +1,66 @@
+# ПР05. Launch, QoS и повтор записи
+
+Ветка `pr05` продолжает ПР04. Пакет `course_bringup` одной командой запускает
+глобальный `turtlesim`, `patrol` и две ноды в пространстве имён `/robot_a`:
+`pose_relay` пересылает позу в `/robot_a/sensor_pose` с QoS `best_effort`,
+`pose_monitor` подписывается с выбранной надёжностью. Выход `patrol` через
+remap подключён к `/turtle1/cmd_vel`. Все имена топиков в собственных нодах
+относительные; входные и выходные связи задаёт launch-файл.
+
+Из корня репозитория:
+
+```bash
+source /opt/ros/lyrical/setup.bash
+export ROS_DOMAIN_ID=105 QT_QPA_PLATFORM=offscreen
+colcon build --symlink-install --packages-select turtle_bringup patrol course_bringup
+source install/setup.bash
+ros2 launch course_bringup patrol.launch.py \
+  namespace:=robot_a subscriber_reliability:=reliable record:=false
+```
+
+В другом терминале с тем же `source` и `ROS_DOMAIN_ID` видно, что
+`/robot_a/sensor_pose` существует, но `reliable`-подписчик не получает
+сообщения от `best_effort`-издателя:
+
+```bash
+ros2 topic info /robot_a/sensor_pose --verbose
+timeout -k 2s 3s ros2 topic echo /robot_a/sensor_pose \
+  --qos-reliability reliable --once
+```
+
+Остановите launch и запустите исправленный профиль вместе с записью MCAP:
+
+```bash
+ros2 launch course_bringup patrol.launch.py \
+  namespace:=robot_a subscriber_reliability:=best_effort \
+  record:=true bag_dir:=evidence/pr05/bag
+```
+
+После нескольких секунд остановите launch, затем воспроизведите запись с
+`config/qos-overrides.yaml` и проверьте оба профиля подписчика:
+
+```bash
+ros2 bag play evidence/pr05/bag --loop \
+  --qos-profile-overrides-path config/qos-overrides.yaml
+ros2 bag info evidence/pr05/bag
+```
+
+Фактические команды и ответы сохранены в
+[qos-before.txt](evidence/pr05/qos-before.txt) и
+[qos-after.txt](evidence/pr05/qos-after.txt); файл
+[bag-metadata.yaml](evidence/pr05/bag-metadata.yaml) скопирован из записи.
+Проверка проекта:
+
+```bash
+python3 -m pytest src/course_bringup/test src/patrol/test -q
+colcon test --packages-select turtle_bringup patrol course_bringup
+colcon test-result --verbose
+python3 .course-kit/v1/tools/check_practice.py PR05 --submission .
+```
+
+Для checker нужен комплект курса `v1-w05`, SHA-256 архива
+`bca214e3de6f90f9513049dfa0f36fee65ad834da502dc3f3f8fb443517b5197`.
+
 # ПР04. Параметризуем движение
 
 Ветка `pr04` продолжает ПР03. Нода `patrol` использует параметры
