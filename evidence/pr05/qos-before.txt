@@ -1,0 +1,72 @@
+PR05 before; UTC 2026-10-05T07:43:07.140497+00:00
+ROS_DOMAIN_ID=105, QT_QPA_PLATFORM=offscreen
+Launch: ros2 launch course_bringup patrol.launch.py namespace:=robot_a subscriber_reliability:=reliable record:=false
+
+$ ros2 node list
+/robot_a/patrol
+/robot_a/pose_monitor
+/robot_a/pose_relay
+/turtlesim
+[exit_code=0]
+
+$ ros2 topic list
+/parameter_events
+/robot_a/sensor_pose
+/rosout
+/turtle1/cmd_vel
+/turtle1/color_sensor
+/turtle1/pose
+[exit_code=0]
+
+$ ros2 topic info /robot_a/sensor_pose --verbose
+Type: turtlesim_msgs/msg/Pose
+
+Publisher count: 1
+
+Node name: pose_relay
+Node namespace: /robot_a
+Topic type: turtlesim_msgs/msg/Pose
+Topic type hash: RIHS01_37b07ace09a0ed2c5b774b1410dec972dfd1d292de5656ebc2b075ac646e09c8
+Endpoint type: PUBLISHER
+GID: 01.0f.eb.7d.14.11.cc.ba.00.00.00.00.00.00.13.03
+QoS profile:
+  Reliability: BEST_EFFORT
+  History (Depth): KEEP_LAST (10)
+  Durability: VOLATILE
+  Lifespan: Infinite
+  Deadline: Infinite
+  Liveliness: AUTOMATIC
+  Liveliness lease duration: Infinite
+
+Subscription count: 1
+
+Node name: pose_monitor
+Node namespace: /robot_a
+Topic type: turtlesim_msgs/msg/Pose
+Topic type hash: RIHS01_37b07ace09a0ed2c5b774b1410dec972dfd1d292de5656ebc2b075ac646e09c8
+Endpoint type: SUBSCRIPTION
+GID: 01.0f.eb.7d.15.11.b9.e8.00.00.00.00.00.00.13.04
+QoS profile:
+  Reliability: RELIABLE
+  History (Depth): KEEP_LAST (10)
+  Durability: VOLATILE
+  Lifespan: Infinite
+  Deadline: Infinite
+  Liveliness: AUTOMATIC
+  Liveliness lease duration: Infinite
+
+[exit_code=0]
+
+$ timeout -k 2s 3s ros2 topic echo /robot_a/sensor_pose --qos-reliability reliable --once
+[WARN] [1791186188.747320541] [_ros2cli_4850]: New publisher discovered on topic '/robot_a/sensor_pose', offering incompatible QoS. No messages will be received from it. Last incompatible policy: RELIABILITY
+[exit_code=124]
+
+$ timeout -k 2s 3s ros2 topic echo /robot_a/sensor_pose --qos-reliability best_effort --once
+x: 3.9310803413391113
+y: 6.777830123901367
+theta: -1.3102089166641235
+linear_velocity: 0.5
+angular_velocity: 0.30000001192092896
+---
+[exit_code=0]
+
