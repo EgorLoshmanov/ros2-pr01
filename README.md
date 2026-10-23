@@ -1,3 +1,40 @@
+# ПР06. Модель робота и tf2
+
+Ветка `pr06` продолжает ПР05. Пакет `course_description` содержит параметризованную
+Xacro-модель Ackermann-робота, launch для `robot_state_publisher` и тесты дерева.
+Размеры взяты из `models/course_ackermann/model.sdf` комплекта курса; Gazebo
+для этой работы не нужен. Оси: x вперёд, y влево, z вверх; размеры в метрах.
+
+```bash
+source /opt/ros/lyrical/setup.bash
+export ROS_DOMAIN_ID=106
+colcon build --symlink-install --packages-select course_description
+source install/setup.bash
+xacro src/course_description/urdf/vehicle.urdf.xacro > /tmp/vehicle.urdf
+check_urdf /tmp/vehicle.urdf
+ros2 launch course_description description.launch.py
+```
+
+В графическом сеансе добавьте `rviz:=true`; готовая конфигурация RViz
+открывает `RobotModel` с `Fixed Frame=base_link` и темой `/robot_description`.
+Подвижные колёса появятся после публикации `/joint_states`; фиксированные
+камера, лидар и IMU публикуются сразу на `/tf_static`.
+
+Проверка дерева и опыта с поздним подписчиком — в
+[evidence/pr06/frames.md](evidence/pr06/frames.md),
+[evidence/pr06/model-check.txt](evidence/pr06/model-check.txt) и
+[evidence/pr06/tf-qos.txt](evidence/pr06/tf-qos.txt).
+
+```bash
+python3 -m pytest src/course_description/test -q
+colcon test --packages-select course_description
+colcon test-result --verbose
+python3 .course-kit/v1/tools/check_practice.py PR06 --submission .
+```
+
+Для checker используется комплект `v1-w07`, SHA-256 архива
+`9b7fdd5424d3d97e47d51dbe23064934585e62135dc2902844dd679529bda929`.
+
 # ПР05. Launch, QoS и повтор записи
 
 Ветка `pr05` продолжает ПР04. Пакет `course_bringup` одной командой запускает

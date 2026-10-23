@@ -1,0 +1,102 @@
+<?xml version="1.0"?>
+<robot name="course_ackermann" xmlns:xacro="http://www.ros.org/wiki/xacro">
+  <!-- SI units; x forward, y left, z up (REP-103). Dimensions from the course SDF. -->
+  <xacro:property name="wheel_base" value="0.80"/>
+  <xacro:property name="wheel_track" value="0.62"/>
+  <xacro:property name="wheel_radius" value="0.12"/>
+  <xacro:property name="wheel_width" value="0.07"/>
+  <xacro:property name="sensor_x" value="0.28"/>
+  <xacro:property name="sensor_z" value="0.38"/>
+
+  <material name="body_blue"><color rgba="0.05 0.36 0.72 1"/></material>
+  <material name="tire_black"><color rgba="0.04 0.04 0.04 1"/></material>
+  <material name="sensor_gray"><color rgba="0.65 0.65 0.65 1"/></material>
+
+  <link name="base_link">
+    <inertial>
+      <origin xyz="0 0 0.12" rpy="0 0 0"/>
+      <mass value="12.0"/>
+      <inertia ixx="0.55" ixy="0" ixz="0" iyy="1.10" iyz="0" izz="1.40"/>
+    </inertial>
+    <visual>
+      <origin xyz="0 0 0.12" rpy="0 0 0"/>
+      <geometry><box size="1.05 0.52 0.22"/></geometry>
+      <material name="body_blue"/>
+    </visual>
+    <collision>
+      <origin xyz="0 0 0.12" rpy="0 0 0"/>
+      <geometry><box size="1.05 0.52 0.22"/></geometry>
+    </collision>
+  </link>
+
+  <xacro:macro name="knuckle" params="side y">
+    <link name="front_${side}_knuckle">
+      <inertial><mass value="0.2"/><inertia ixx="0.001" ixy="0" ixz="0" iyy="0.001" iyz="0" izz="0.001"/></inertial>
+    </link>
+    <joint name="front_${side}_steering_joint" type="revolute">
+      <parent link="base_link"/><child link="front_${side}_knuckle"/>
+      <origin xyz="${wheel_base/2} ${y} 0" rpy="0 0 0"/>
+      <axis xyz="0 0 1"/><limit lower="-0.55" upper="0.55" effort="25" velocity="1"/>
+    </joint>
+  </xacro:macro>
+
+  <xacro:macro name="wheel" params="axle side y parent x">
+    <link name="${axle}_${side}_wheel">
+      <inertial>
+        <mass value="0.8"/>
+        <inertia ixx="0.006" ixy="0" ixz="0" iyy="0.003" iyz="0" izz="0.006"/>
+      </inertial>
+      <visual>
+        <origin xyz="0 0 0" rpy="${pi/2} 0 0"/>
+        <geometry><cylinder radius="${wheel_radius}" length="${wheel_width}"/></geometry>
+        <material name="tire_black"/>
+      </visual>
+      <collision>
+        <origin xyz="0 0 0" rpy="${pi/2} 0 0"/>
+        <geometry><cylinder radius="${wheel_radius}" length="${wheel_width}"/></geometry>
+      </collision>
+    </link>
+    <joint name="${axle}_${side}_wheel_joint" type="continuous">
+      <parent link="${parent}"/><child link="${axle}_${side}_wheel"/>
+      <origin xyz="${x} ${y} 0" rpy="0 0 0"/>
+      <axis xyz="0 1 0"/>
+    </joint>
+  </xacro:macro>
+
+  <xacro:knuckle side="left" y="${wheel_track/2}"/>
+  <xacro:knuckle side="right" y="${-wheel_track/2}"/>
+  <xacro:wheel axle="front" side="left" y="0" parent="front_left_knuckle" x="0"/>
+  <xacro:wheel axle="front" side="right" y="0" parent="front_right_knuckle" x="0"/>
+  <xacro:wheel axle="rear" side="left" y="${wheel_track/2}" parent="base_link" x="${-wheel_base/2}"/>
+  <xacro:wheel axle="rear" side="right" y="${-wheel_track/2}" parent="base_link" x="${-wheel_base/2}"/>
+
+  <link name="camera_link">
+    <inertial><mass value="0.033333333333"/><inertia ixx="0.000333333333" ixy="0" ixz="0" iyy="0.000333333333" iyz="0" izz="0.000333333333"/></inertial>
+    <visual><geometry><box size="0.06 0.04 0.04"/></geometry><material name="sensor_gray"/></visual>
+    <collision><geometry><box size="0.06 0.04 0.04"/></geometry></collision>
+  </link>
+  <joint name="camera_joint" type="fixed">
+    <parent link="base_link"/><child link="camera_link"/>
+    <origin xyz="${sensor_x} 0 ${sensor_z}" rpy="0 0 0"/>
+  </joint>
+
+  <link name="lidar_link">
+    <inertial><mass value="0.033333333333"/><inertia ixx="0.000333333333" ixy="0" ixz="0" iyy="0.000333333333" iyz="0" izz="0.000333333333"/></inertial>
+    <visual><geometry><cylinder radius="0.04" length="0.04"/></geometry><material name="sensor_gray"/></visual>
+    <collision><geometry><cylinder radius="0.04" length="0.04"/></geometry></collision>
+  </link>
+  <joint name="lidar_joint" type="fixed">
+    <parent link="base_link"/><child link="lidar_link"/>
+    <origin xyz="${sensor_x} 0 ${sensor_z}" rpy="0 0 0"/>
+  </joint>
+
+  <link name="imu_link">
+    <inertial><mass value="0.033333333334"/><inertia ixx="0.000333333334" ixy="0" ixz="0" iyy="0.000333333334" iyz="0" izz="0.000333333334"/></inertial>
+    <visual><geometry><box size="0.04 0.04 0.02"/></geometry><material name="sensor_gray"/></visual>
+    <collision><geometry><box size="0.04 0.04 0.02"/></geometry></collision>
+  </link>
+  <joint name="imu_joint" type="fixed">
+    <parent link="base_link"/><child link="imu_link"/>
+    <origin xyz="${sensor_x} 0 ${sensor_z}" rpy="0 0 0"/>
+  </joint>
+</robot>
