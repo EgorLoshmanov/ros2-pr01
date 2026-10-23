@@ -1,0 +1,67 @@
+{
+  "schema_version": 1,
+  "practice_id": "PR06",
+  "commit": "cfe0bd18d232305d887455f9843b61409d760a5b",
+  "course_kit": {
+    "version": "v1-w07",
+    "archive_sha256": "9b7fdd5424d3d97e47d51dbe23064934585e62135dc2902844dd679529bda929"
+  },
+  "commands": [
+    "colcon build --symlink-install --packages-select course_description",
+    "xacro src/course_description/urdf/vehicle.urdf.xacro > /tmp/vehicle.urdf",
+    "check_urdf /tmp/vehicle.urdf",
+    "python3 -m pytest src/course_description/test -q",
+    "colcon test --packages-select course_description --event-handlers console_direct+",
+    "colcon test-result --verbose",
+    "ros2 launch course_description description.launch.py rviz:=true",
+    "ros2 topic info /tf_static --verbose",
+    "timeout 4 ros2 topic echo /tf_static --once --qos-durability transient_local --qos-reliability reliable",
+    "timeout 4 ros2 topic echo /tf_static --once --qos-durability volatile --qos-reliability reliable",
+    "ros2 run tf2_ros tf2_echo base_link lidar_link",
+    "ros2 run tf2_tools view_frames --wait-time 3 -o /tmp/pr06-fixed-frames",
+    "python3 .course-kit/v1/tools/check_practice.py PR06 --submission ."
+  ],
+  "tests": [
+    {
+      "name": "Xacro and check_urdf accept the corrected connected model",
+      "status": "passed",
+      "evidence": "model-check.txt"
+    },
+    {
+      "name": "Six structural tests and colcon test pass",
+      "status": "passed",
+      "evidence": "model-check.txt"
+    },
+    {
+      "name": "Late transient_local subscription receives fixed frames; volatile times out",
+      "status": "passed",
+      "evidence": "tf-qos.txt"
+    },
+    {
+      "name": "Wrong lidar parent fails test and doubles observed position; corrected parent passes",
+      "status": "passed",
+      "evidence": "model-check.txt"
+    },
+    {
+      "name": "RViz subscribes to robot_description with compatible QoS",
+      "status": "passed",
+      "evidence": "model-check.txt"
+    }
+  ],
+  "defect": {
+    "reproducer": "In pr06-defect commit d626a8a249aca954fec76e62d133259610133358, lidar_joint parent=camera_link with unchanged offset. check_urdf accepts it, but test_sensor_parent_and_offset[lidar_link] fails and tf2_echo reports (0.56, 0, 0.76).",
+    "root_cause": "The camera offset (0.28, 0, 0.38) is added to the lidar offset (0.28, 0, 0.38) because lidar_link is attached to camera_link instead of base_link.",
+    "proof_after": "On pr06, the same parent test passes, check_urdf accepts the model, view_frames reports base_link as lidar_link parent, and tf2_echo reports (0.28, 0, 0.38)."
+  },
+  "claims": {
+    "public_tests_passed": true,
+    "defect_reproduced": true,
+    "defect_fixed": true
+  },
+  "time": {
+    "contact_academic_hours": 0,
+    "self_study_hours": 1
+  },
+  "ai_used": true,
+  "runtime_note": "ROS 2 Lyrical, ROS_DOMAIN_ID=106. Fixed transforms were checked with a live robot_state_publisher; no joint_states publisher was used."
+}

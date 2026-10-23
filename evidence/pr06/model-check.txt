@@ -1,0 +1,61 @@
+ПР06, ROS 2 Lyrical, ROS_DOMAIN_ID=106. Команды выполнены из корня репозитория после source /opt/ros/lyrical/setup.bash.
+
+## Развёртывание и структурная проверка исправленной модели
+$ xacro src/course_description/urdf/vehicle.urdf.xacro > /tmp/vehicle.urdf
+$ check_urdf /tmp/vehicle.urdf
+robot name is: course_ackermann
+---------- Successfully Parsed XML ---------------
+root Link: base_link has 7 child(ren)
+    child(1):  camera_link
+    child(2):  front_left_knuckle
+        child(1):  front_left_wheel
+    child(3):  front_right_knuckle
+        child(1):  front_right_wheel
+    child(4):  imu_link
+    child(5):  lidar_link
+    child(6):  rear_left_wheel
+    child(7):  rear_right_wheel
+
+$ python3 -m pytest src/course_description/test -q
+6 passed in 0.04s
+$ colcon test --packages-select course_description --event-handlers console_direct+
+test/test_vehicle.py ...... [100%]
+6 passed in 0.05s
+$ colcon test-result --verbose
+Summary: 34 tests, 0 errors, 0 failures, 2 skipped
+Итог colcon test-result накопительный для рабочего каталога: шесть тестов принадлежат course_description.
+
+## Работающее дерево после исправления
+$ ros2 launch course_description description.launch.py rviz:=true
+robot_state_publisher: Robot initialized
+rviz2: OpenGl version: 4.5 (GLSL 4.5)
+$ ros2 topic info /robot_description --verbose
+Publisher count: 1 (robot_state_publisher), RELIABLE, TRANSIENT_LOCAL
+Subscription count: 1 (rviz2), RELIABLE, TRANSIENT_LOCAL
+RViz открыл конфигурацию с RobotModel и Fixed Frame=base_link. При разборе URDF robot_state_publisher выдал предупреждение KDL об инерции корневого base_link; публикация tf и загрузка RViz продолжились.
+
+$ ros2 run tf2_ros tf2_echo base_link lidar_link
+Translation: [0.280, 0.000, 0.380]
+Rotation in RPY (radian): [0.000, -0.000, 0.000]
+$ ros2 run tf2_tools view_frames --wait-time 3 -o /tmp/pr06-fixed-frames
+camera_link: parent: 'base_link'
+imu_link: parent: 'base_link'
+lidar_link: parent: 'base_link'
+Отсутствие подвижных звеньев в view_frames ожидаемо: никто не публиковал joint_states.
+
+## Намеренный дефект и повтор той же проверки
+Ветка pr06-defect, commit d626a8a249aca954fec76e62d133259610133358:
+parent lidar_joint: camera_link; локальный xyz остался 0.28 0 0.38.
+$ xacro src/course_description/urdf/vehicle.urdf.xacro > /tmp/pr06-defect.urdf
+$ check_urdf /tmp/pr06-defect.urdf
+Successfully Parsed XML; root Link: base_link has 6 child(ren); camera_link has lidar_link.
+$ python3 -m pytest src/course_description/test/test_vehicle.py -q
+FAILED test_sensor_parent_and_offset[lidar_link]
+AssertionError: assert 'camera_link' == 'base_link'
+1 failed, 5 passed in 0.05s; exit=1
+$ ros2 run tf2_ros tf2_echo base_link lidar_link
+Translation: [0.560, 0.000, 0.760]
+$ ros2 run tf2_tools view_frames --wait-time 3 -o /tmp/pr06-defect-frames
+lidar_link: parent: 'camera_link'
+
+После возврата в pr06 тот же pytest: 6 passed; check_urdf: Successfully Parsed XML; tf2_echo: Translation [0.280, 0.000, 0.380].
