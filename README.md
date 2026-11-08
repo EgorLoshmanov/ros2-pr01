@@ -1,3 +1,52 @@
+# ПР07. Gazebo, мост и сенсоры
+
+Ветка `pr07` продолжает ПР06. Пакет `course_simulation` запускает один сервер
+Gazebo без окна, `robot_state_publisher`, один мост `ros_gz`, адаптер команды
+Ackermann→Twist и адаптер одометрии. Мир уже включает робота. В launch можно
+указать `namespace:=robot_a`; контрактные `/drive/safe`, `/vehicle/...`, `/clock`
+и `/tf` остаются глобальными.
+
+```bash
+source /opt/ros/lyrical/setup.bash
+export ROS_DOMAIN_ID=107 LIBGL_ALWAYS_SOFTWARE=1
+colcon build --symlink-install --packages-up-to course_simulation
+source install/setup.bash
+ros2 launch course_simulation simulation.launch.py headless:=true namespace:=robot_a
+```
+
+В другом терминале с теми же `source` и `ROS_DOMAIN_ID` можно послать свежую
+тестовую команду, которая закончится нулевой:
+
+```bash
+ros2 run course_simulation test_drive_source --ros-args \
+  -p use_sim_time:=true -p speed:=0.5 -p steering_angle:=0.15 -p duration:=10.0
+ros2 topic echo /vehicle/gz_cmd_vel --once
+gz topic -e -t /model/course_ackermann/cmd_vel
+ros2 topic echo /vehicle/odom --once
+ros2 run tf2_ros tf2_echo odom base_link --ros-args -p use_sim_time:=true
+```
+
+Адаптер принимает только конечные значения и свежий stamp (не старше 0,25 с),
+ограничивает скорость до 1,2 м/с и угол руля до ±0,45 рад. Сырой Gazebo-топик
+`/vehicle/odom_gz` нормализуется в `/vehicle/odom`; только этот адаптер
+публикует динамический `odom→base_link`. Фиксированные связи из ПР06 публикует
+`robot_state_publisher`. Камера, лидар и IMU используют `best_effort`; частота
+лидара изменена с 10 до 8 Гц в SDF. Фактические измерения и опыт с ошибкой
+моста сохранены в [evidence/pr07/](evidence/pr07/).
+
+Запись для ПР08 создаётся локально с `--use-sim-time` в `fixtures/pr07-sensors`;
+файл [bag-info.txt](evidence/pr07/bag-info.txt) описывает её семь топиков.
+
+```bash
+python3 -m pytest src/course_simulation/test -q
+colcon test --packages-select course_description course_simulation
+colcon test-result --verbose
+python3 .course-kit/v1/tools/check_practice.py PR07 --submission .
+```
+
+Использован комплект курса `v1-w07`, SHA-256 архива
+`9b7fdd5424d3d97e47d51dbe23064934585e62135dc2902844dd679529bda929`.
+
 # ПР06. Модель робота и tf2
 
 Ветка `pr06` продолжает ПР05. Пакет `course_description` содержит параметризованную

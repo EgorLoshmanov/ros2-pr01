@@ -7,5 +7,6 @@ course-kit.tar.gz
 build/
 install/
 log/
+/fixtures/
 __pycache__/
 *.pyc
