@@ -1,0 +1,48 @@
+
+/vehicle/camera/image_raw
+Publisher count: 1
+Node name: gazebo_bridge
+  Reliability: BEST_EFFORT
+  Durability: VOLATILE
+
+/vehicle/scan
+Publisher count: 1
+Node name: gazebo_bridge
+  Reliability: BEST_EFFORT
+  Durability: VOLATILE
+
+/vehicle/imu
+Publisher count: 1
+Node name: gazebo_bridge
+  Reliability: BEST_EFFORT
+  Durability: VOLATILE
+
+/vehicle/odom_gz
+Publisher count: 1
+Node name: gazebo_bridge
+  Reliability: RELIABLE
+  Durability: VOLATILE
+
+/vehicle/odom
+Publisher count: 1
+Node name: odom_adapter
+  Reliability: RELIABLE
+  Durability: VOLATILE
+
+/tf_static
+Publisher count: 1
+Node name: robot_state_publisher
+  Reliability: RELIABLE
+  Durability: TRANSIENT_LOCAL
+
+Gazebo odometry frames
+course_ackermann/odom
+---
+course_ackermann/base_link
+---
+
+Normalized odometry frames
+odom
+---
+base_link
+---

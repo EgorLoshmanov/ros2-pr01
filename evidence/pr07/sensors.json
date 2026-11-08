@@ -1,0 +1,69 @@
+{
+  "course_kit": "v1-w07",
+  "environment": {
+    "ubuntu": "26.04.1",
+    "ros": "lyrical",
+    "gazebo": "jetty 10.5.0",
+    "renderer": "Mesa llvmpipe, headless OGRE2/EGL",
+    "ros_domain_id": 107,
+    "namespace": "robot_a"
+  },
+  "time_source": "/clock",
+  "recording": {
+    "path": "fixtures/pr07-sensors",
+    "duration_sim_seconds": 44.395,
+    "duration_wall_seconds": 50,
+    "estimated_real_time_factor": 0.888
+  },
+  "sensors": [
+    {
+      "topic": "/vehicle/camera/image_raw",
+      "type": "sensor_msgs/msg/Image",
+      "frame_id": "camera_link",
+      "stamp_source": "simulation /clock",
+      "qos": "best_effort, keep_last",
+      "declared_hz": 20,
+      "ros2_topic_hz_wall": 0.938,
+      "bag_messages": 531,
+      "bag_effective_sim_hz": 11.96
+    },
+    {
+      "topic": "/vehicle/scan",
+      "type": "sensor_msgs/msg/LaserScan",
+      "frame_id": "lidar_link",
+      "stamp_source": "simulation /clock",
+      "qos": "best_effort, keep_last",
+      "declared_hz": 8,
+      "ros2_topic_hz_wall": 7.201,
+      "bag_messages": 355,
+      "bag_effective_sim_hz": 8.0
+    },
+    {
+      "topic": "/vehicle/imu",
+      "type": "sensor_msgs/msg/Imu",
+      "frame_id": "imu_link",
+      "stamp_source": "simulation /clock",
+      "qos": "best_effort, keep_last",
+      "declared_hz": 100,
+      "ros2_topic_hz_wall": 90.277,
+      "bag_messages": 4439,
+      "bag_effective_sim_hz": 99.99
+    },
+    {
+      "topic": "/vehicle/odom",
+      "source_topic": "/vehicle/odom_gz",
+      "type": "nav_msgs/msg/Odometry",
+      "source_frame_id": "course_ackermann/odom",
+      "source_child_frame_id": "course_ackermann/base_link",
+      "frame_id": "odom",
+      "child_frame_id": "base_link",
+      "stamp_source": "simulation /clock",
+      "qos": "reliable, keep_last",
+      "declared_hz": 50,
+      "ros2_topic_hz_wall": 44.516,
+      "bag_messages": 2219,
+      "bag_effective_sim_hz": 49.98
+    }
+  ],
+  "frequency_note": "The bag rate divides topic counts by 44.395 seconds of /clock. Wall-time ros2 topic hz is scaled by real-time factor near 0.89 for scan, IMU and odometry. Camera ros2 topic hz received much less than the MCAP recorder; software rendering, image-copy load and best-effort delivery make that short subscriber measurement unrepresentative. The recorder received 531 camera frames, still below the SDF 20 Hz target."
+}

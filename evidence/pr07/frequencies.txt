@@ -1,0 +1,38 @@
+
+/vehicle/camera/image_raw
+average rate: 1.591
+	min: 0.120s max: 1.138s std dev: 0.50892s window: 2
+average rate: 0.594
+	min: 0.120s max: 3.792s std dev: 1.54798s window: 3
+failed to initialize wait set: the given context is not valid, either rcl_init() was not called or rcl_shutdown() was called., at ./src/rcl/wait.c:110
+
+/vehicle/scan
+average rate: 7.217
+	min: 0.122s max: 0.163s std dev: 0.01103s window: 35
+average rate: 7.201
+	min: 0.122s max: 0.163s std dev: 0.01153s window: 42
+failed to initialize wait set: the given context is not valid, either rcl_init() was not called or rcl_shutdown() was called., at ./src/rcl/wait.c:110
+
+/vehicle/imu
+average rate: 90.279
+	min: 0.008s max: 0.020s std dev: 0.00217s window: 451
+average rate: 90.277
+	min: 0.008s max: 0.020s std dev: 0.00217s window: 541
+failed to initialize wait set: the given context is not valid, either rcl_init() was not called or rcl_shutdown() was called., at ./src/rcl/wait.c:110
+
+/vehicle/odom
+	min: 0.019s max: 0.033s std dev: 0.00326s window: 176
+average rate: 44.518
+	min: 0.019s max: 0.033s std dev: 0.00316s window: 221
+average rate: 44.516
+	min: 0.019s max: 0.033s std dev: 0.00308s window: 266
+
+Camera after bag stopped
+average rate: 0.445
+	min: 2.245s max: 2.245s std dev: 0.00000s window: 1
+average rate: 1.136
+	min: 0.169s max: 2.245s std dev: 0.96540s window: 3
+average rate: 0.977
+	min: 0.169s max: 2.245s std dev: 0.87209s window: 4
+average rate: 0.938
+	min: 0.169s max: 2.245s std dev: 0.78477s window: 5

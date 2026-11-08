@@ -1,0 +1,21 @@
+stdin is not a terminal device. Keyboard handling disabled.[INFO] [1794140908.272056262] [rosbag2_recorder]: Press SPACE for pausing/resuming
+[INFO] [1794140908.272070304] [rosbag2_recorder]: Event publisher thread: Started
+[INFO] [1794140908.279335054] [rosbag2_recorder]: Starting recording to 'fixtures/pr07-sensors'
+[WARN] [1794140908.279360512] [rosbag2_recorder]: No input serialization format specified, using default rmw serialization format: 'cdr'.
+[INFO] [1794140908.282819054] [rosbag2_recorder]: Listening for topics...
+[INFO] [1794140908.282838096] [rosbag2_recorder]: Recording...
+[INFO] [1794140908.282859762] [rosbag2_recorder]: Topics discovery started.
+[INFO] [1794140908.282872762] [rosbag2_recorder]: use_sim_time set, waiting for /clock before starting recording...
+[INFO] [1794140908.381649846] [rosbag2_recorder]: Sim time /clock found, starting recording.
+[INFO] [1794140908.385649804] [rosbag2_recorder]: Subscribed to topic '/clock'
+[INFO] [1794140908.391321429] [rosbag2_recorder]: Subscribed to topic '/tf'
+[INFO] [1794140908.395481304] [rosbag2_recorder]: Subscribed to topic '/vehicle/camera/image_raw'
+[INFO] [1794140908.396300054] [rosbag2_recorder]: Subscribed to topic '/tf_static'
+[INFO] [1794140908.397255596] [rosbag2_recorder]: Subscribed to topic '/vehicle/imu'
+[INFO] [1794140908.401123262] [rosbag2_recorder]: Subscribed to topic '/vehicle/odom'
+[INFO] [1794140908.402958221] [rosbag2_recorder]: Subscribed to topic '/vehicle/scan'
+[INFO] [1794140908.402978387] [rosbag2_recorder]: All requested topics are subscribed. Stopping discovery...
+[INFO] [1794140908.402981012] [rosbag2_recorder]: Topics discovery stopped.
+[INFO] [1794140957.952598174] [rosbag2_cpp]: Writing remaining messages from cache to the bag. It may take a while
+[INFO] [1794140957.958885924] [rosbag2_recorder]: Recording stopped
+[INFO] [1794140957.960031216] [rosbag2_recorder]: Event publisher thread: Exited

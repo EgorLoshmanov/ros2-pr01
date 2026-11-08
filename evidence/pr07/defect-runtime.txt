@@ -1,0 +1,50 @@
+YAML IMU route
+- ros_topic_name: /vehicle/imu
+  gz_topic_name: /vehicle/imu_typo
+  ros_type_name: sensor_msgs/msg/Imu
+  gz_type_name: gz.msgs.IMU
+  direction: GZ_TO_ROS
+  qos_profile: SENSOR_DATA
+ROS /vehicle/imu participants
+Type: sensor_msgs/msg/Imu
+
+Publisher count: 1
+
+Node name: gazebo_bridge
+Node namespace: /robot_a
+Topic type: sensor_msgs/msg/Imu
+Topic type hash: RIHS01_7d9a00ff131080897a5ec7e26e315954b8eae3353c3f995c55faf71574000b5b
+Endpoint type: PUBLISHER
+GID: 01.0f.eb.7d.89.1c.81.3e.00.00.00.00.00.00.17.03
+QoS profile:
+  Reliability: BEST_EFFORT
+  History (Depth): KEEP_LAST (5)
+  Durability: VOLATILE
+  Lifespan: Infinite
+  Deadline: Infinite
+  Liveliness: AUTOMATIC
+  Liveliness lease duration: Infinite
+
+Subscription count: 0
+
+ROS one-message probe (3 s)
+status=124 output_bytes=12
+Gazebo source info
+Publishers [Address, Message Type]:
+  tcp://172.17.0.2:45289, gz.msgs.IMU
+No subscribers on topic [/vehicle/imu]
+Gazebo source message
+header {
+  stamp {
+    sec: 16
+    nsec: 60000000
+  }
+  data {
+    key: "frame_id"
+    value: "imu_link"
+  }
+  data {
+    key: "seq"
+    value: "1"
+  }
+}

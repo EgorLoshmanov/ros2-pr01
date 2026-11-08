@@ -1,0 +1,38 @@
+Before: normalized odometry position
+x: -4.821032860456934e-16
+y: 8.78021224344645e-41
+z: 0.0
+---
+ROS command while moving
+linear:
+  x: 0.5
+  y: 0.0
+  z: 0.0
+angular:
+  x: 0.0
+  y: 0.0
+  z: 0.09445951509681726
+---
+Gazebo command while moving
+linear {
+  x: 0.5
+}
+angular {
+  z: 0.094459515096817256
+}
+
+linear {
+Gazebo body x while moving
+    x: 1.2648671543581609
+Source completion
+[INFO] [1794141230.047718383] [test_drive_source]: Sent final zero drive command
+After: normalized odometry position
+x: 3.6919338089919957
+y: 1.276194011541332
+z: 0.0
+---
+After: tf odom to base_link
+At time 45.282000000
+- Translation: [3.692, 1.276, 0.000]
+- Rotation: in Quaternion (xyzw) [0.000, 0.000, 0.343, 0.939]
+- Rotation: in RPY (radian) [0.000, -0.000, 0.700]

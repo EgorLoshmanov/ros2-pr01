@@ -1,0 +1,15 @@
+Failed to create stream fd: No such file or directory
+Failed to create stream fd: No such file or directory
+Failed to create stream fd: No such file or directory
+...................                                                      [100%]
+19 passed in 0.37s
+Starting >>> course_description
+Finished <<< course_description [0.50s]
+Starting >>> course_simulation
+Finished <<< course_simulation [0.80s]
+
+Summary: 2 packages finished [1.44s]
+Summary: 47 tests, 0 errors, 0 failures, 2 skipped
+PR07: на доработку
+- после report.commit незакоммиченными могут быть только evidence текущей ПР и AI_USAGE.md; неожиданные пути: evidence/pr03/repeat_commands.txt, evidence/pr04/repeat_commands.txt, evidence/pr05/commands.md, evidence/pr05/motion-replay.md
+PR07: контракт evidence выполнен

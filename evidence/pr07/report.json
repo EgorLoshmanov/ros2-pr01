@@ -1,0 +1,51 @@
+{
+  "schema_version": 1,
+  "practice_id": "PR07",
+  "commit": "48f2d9961b4efb017697fc1907ed5c335f493c2f",
+  "course_kit": {
+    "version": "v1-w07",
+    "archive_sha256": "9b7fdd5424d3d97e47d51dbe23064934585e62135dc2902844dd679529bda929"
+  },
+  "commands": [
+    ".course-kit/v1/tools/workstation_report.sh",
+    "colcon build --symlink-install --packages-up-to course_simulation",
+    "gz sdf -k src/course_simulation/models/course_ackermann/model.sdf",
+    "ros2 launch course_simulation simulation.launch.py headless:=true namespace:=robot_a",
+    "ros2 run course_simulation test_drive_source --ros-args -p use_sim_time:=true -p speed:=0.5 -p steering_angle:=0.15 -p duration:=8.0",
+    "ros2 topic info -v /vehicle/imu",
+    "gz topic -i -t /vehicle/imu",
+    "ros2 topic hz /vehicle/scan --qos-reliability best_effort --wall-time",
+    "ros2 bag record --storage mcap --use-sim-time -o fixtures/pr07-sensors --topics /vehicle/camera/image_raw /vehicle/scan /vehicle/imu /vehicle/odom /tf /tf_static /clock",
+    "ros2 bag info fixtures/pr07-sensors",
+    "python3 -m pytest src/course_description/test src/course_simulation/test -q",
+    "colcon test --packages-select course_description course_simulation",
+    "colcon test-result --verbose",
+    "python3 .course-kit/v1/tools/check_practice.py PR07 --submission ."
+  ],
+  "tests": [
+    {"name": "Xacro and adapter unit tests", "status": "passed", "evidence": "tests.txt"},
+    {"name": "Gazebo headless launch, /clock and four sensor topics", "status": "passed", "evidence": "headless.txt"},
+    {"name": "ROS command equals Gazebo command and moves body", "status": "passed", "evidence": "motion.txt"},
+    {"name": "IMU bridge typo fails route test and live echo; correction passes", "status": "passed", "evidence": "defect.md"},
+    {"name": "MCAP has seven nonempty topics for 44.395 s of simulation time", "status": "passed", "evidence": "bag-info.txt"}
+  ],
+  "defect": {
+    "reproducer": "In pr07-defect commit e7a588d33ffcce901ca0dee15c3b9d2f45072dd3, IMU gz_topic_name=/vehicle/imu_typo. The route test failed and ros2 topic echo /vehicle/imu --once timed out after 3 s despite one ROS publisher; Gazebo /vehicle/imu still emitted messages.",
+    "root_cause": "The bridge subscribed to a nonexistent Gazebo topic; the existence of its ROS publisher did not establish message delivery.",
+    "proof_after": "After stopping the defect launch and switching to pr07, the same route test passed, one bridge launched, and ros2 topic echo /vehicle/imu --once received an imu_link header."
+  },
+  "claims": {
+    "public_tests_passed": true,
+    "defect_reproduced": true,
+    "defect_fixed": true,
+    "headless_verified": true,
+    "recording_verified": true,
+    "odometry_tf_owned": true
+  },
+  "time": {
+    "contact_academic_hours": 0,
+    "self_study_hours": 2.5
+  },
+  "ai_used": true,
+  "runtime_note": "Ubuntu 26.04.1, ROS 2 Lyrical, Gazebo Jetty 10.5.0, ROS_DOMAIN_ID=107. ackermann_msgs and related ROS type support were installed/updated before the live test. Mesa llvmpipe rendered the headless sensors."
+}
